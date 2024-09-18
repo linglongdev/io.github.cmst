@@ -1,0 +1,29 @@
+version: "1"
+
+package:
+  id: io.github.cmst
+  name: cmst
+  version: 2.0.0.0
+  kind: app
+  description: |
+    QT GUI for Connman
+
+command:
+  - /opt/apps/io.github.cmst/files/bin/cmst
+
+base: org.deepin.foundation/23.0.0
+runtime: org.deepin.Runtime/23.0.1
+
+sources:
+  - kind: git
+    url: https://github.com/andrew-bibb/cmst.git
+    version: master
+    commit: c54acf8db04287b4c1e74179995ef3771516ae15
+
+
+build: |
+  cd /project/linglong/sources/cmst.git
+  git apply ../../../0001-install.patch
+  qmake -makefile PREFIX=${PREFIX} LIB_INSTALL_DIR=${PREFIX}/lib/${TRIPLET}
+  make -j$(nproc)
+  make install
