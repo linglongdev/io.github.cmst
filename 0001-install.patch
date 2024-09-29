@@ -1,0 +1,147 @@
+From 4ff17c2b89c68ac0bbf8834800eef2c97b1fa1cd Mon Sep 17 00:00:00 2001
+From: wjyrich <1071633242@qq.com>
+Date: Sat, 14 Sep 2024 17:53:59 +0800
+Subject: [PATCH] install
+
+---
+ apps/cmstapp/cmst.desktop                       | 11 +++++++++++
+ apps/cmstapp/cmstapp.pro                        |  3 ++-
+ apps/rootapp/rootapp.pro                        |  4 ++--
+ apps/rootapp/system/org.cmst.roothelper.service |  2 +-
+ cmst.pri                                        |  4 ++--
+ cmst.pro                                        | 14 +++++++-------
+ 6 files changed, 25 insertions(+), 13 deletions(-)
+ create mode 100644 apps/cmstapp/cmst.desktop
+
+diff --git a/apps/cmstapp/cmst.desktop b/apps/cmstapp/cmst.desktop
+new file mode 100644
+index 0000000..4449915
+--- /dev/null
++++ b/apps/cmstapp/cmst.desktop
+@@ -0,0 +1,11 @@
++[Desktop Entry]
++Categories=Accessibility;Qt;Utility;
++Exec=cmst
++Name=cmst
++Name[zh_CN]=cmst
++Icon=cmst-icon
++StartupNotify=false
++Terminal=false
++Type=Application
++GenericName=cmst
++Version=2.0.0
+\ No newline at end of file
+diff --git a/apps/cmstapp/cmstapp.pro b/apps/cmstapp/cmstapp.pro
+index aa47b6a..d0d444e 100644
+--- a/apps/cmstapp/cmstapp.pro
++++ b/apps/cmstapp/cmstapp.pro
+@@ -20,9 +20,10 @@ CONFIG += embed_translations
+ 
+ TEMPLATE = app
+ TARGET = cmst
+-target.path = /usr/bin
++target.path = $$PREFIX/bin
+ INSTALLS += target
+ 
++#INSTALLS += desktop icons
+ # dbus
+ DBUS_ADAPTORS 	+= ./code/agent/org.monkey_business_enterprises.agent.xml
+ DBUS_INTERFACES	+= ./code/agent/org.monkey_business_enterprises.agent.xml
+diff --git a/apps/rootapp/rootapp.pro b/apps/rootapp/rootapp.pro
+index 2f2696b..89e0817 100755
+--- a/apps/rootapp/rootapp.pro
++++ b/apps/rootapp/rootapp.pro
+@@ -15,11 +15,11 @@ TARGET = cmstroothelper
+ target.path = $$CMST_LIB_PATH
+ INSTALLS += target
+ 
+-conf.path = /etc/dbus-1/system.d
++conf.path = $$PREFIX/etc/dbus-1/system.d
+ conf.files = ./system/distro/$$CMST_BUILD_DISTRO/org.cmst.roothelper.conf
+ INSTALLS += conf
+ 
+-service.path = /usr/share/dbus-1/system-services
++service.path = $$PREFIX/share/dbus-1/system-services
+ service.files = ./system/org.cmst.roothelper.service
+ service.extra = echo "[D-BUS Service]" > ./system/org.cmst.roothelper.service; echo "Name=org.cmst.roothelper" >> ./system/org.cmst.roothelper.service; echo "Exec=$$CMST_LIB_PATH/cmstroothelper" >> ./system/org.cmst.roothelper.service; echo "User=root" >> ./system/org.cmst.roothelper.service
+ INSTALLS += service
+diff --git a/apps/rootapp/system/org.cmst.roothelper.service b/apps/rootapp/system/org.cmst.roothelper.service
+index cc0a8a5..ff7764a 100644
+--- a/apps/rootapp/system/org.cmst.roothelper.service
++++ b/apps/rootapp/system/org.cmst.roothelper.service
+@@ -1,4 +1,4 @@
+ [D-BUS Service]
+ Name=org.cmst.roothelper
+-Exec=/usr/lib/cmst/cmstroothelper
++Exec=/opt/apps/io.github./files/lib/cmst/cmstroothelper
+ User=root
+diff --git a/cmst.pri b/cmst.pri
+index 4e30f22..0417cb9 100644
+--- a/cmst.pri
++++ b/cmst.pri
+@@ -7,11 +7,11 @@ CMST_BUILD_DISTRO = $$DISTRO
+ # define a path for user libraries (the roothelper program)
+ CMST_LIB_PATH = $$(USE_LIBPATH)
+ isEmpty ( CMST_LIB_PATH ) {
+-	CMST_LIB_PATH = "/usr/lib/cmst"
++	CMST_LIB_PATH = "$$PREFIX/lib/cmst"
+ } 
+ 
+ # define a path for the man page
+ CMST_DOC_PATH = $$(USE_MANPATH)
+ isEmpty ( CMST_DOC_PATH ) {
+-	CMST_DOC_PATH = "/usr/share/man"
++	CMST_DOC_PATH = "$$PREFIX/share/man"
+ }
+diff --git a/cmst.pro b/cmst.pro
+index a34d50f..a9bf9a8 100755
+--- a/cmst.pro
++++ b/cmst.pro
+@@ -18,12 +18,12 @@ INSTALLS += documentation
+ exists(./images/application/cmst-icon.png) {
+ 	LIST = 16 20 22 24 32 36 40 48 64 72 96 128 192 256 384 512
+ 	for(a, LIST) {
+-		icon$${a}.path = /usr/share/icons/hicolor/$${a}x$${a}/apps
++		icon$${a}.path = $$PREFIX/share/icons/hicolor/$${a}x$${a}/apps
+ 		icon$${a}.files = ./images/application/$${a}x$${a}/cmst.png
+ 		INSTALLS += icon$${a}
+ 	}
+ 	exists(./images/application/scalable/cmst.svg) {
+-		iconsvg.path = /usr/share/icons/hicolor/scalable/apps
++		iconsvg.path = $$PREFIX/share/icons/hicolor/scalable/apps
+ 		iconsvg.files = ./images/application/scalable/cmst.svg
+ 		INSTALLS += iconsvg
+ 	}
+@@ -33,24 +33,24 @@ exists(./images/application/cmst-icon.png) {
+ }
+ 
+ # license
+-license.path = /usr/share/licenses/cmst
++license.path = $$PREFIX/share/licenses/cmst
+ license.files = ./text/LICENSE
+ INSTALLS += license
+ 
+ # appdata
+-appdata.path = /usr/share/metainfo
++appdata.path = $$PREFIX/share/metainfo
+ appdata.files = ./misc/appdata/org.cmst.cmst.appdata.xml
+ INSTALLS += appdata
+ 
+ # desktop file
+-desktop.path = /usr/share/applications
++desktop.path = $$PREFIX/share/applications
+ desktop.files = ./misc/desktop/cmst.desktop
+ !isEmpty(DESTDIR) {
+-	desktop.extra = gtk-update-icon-cache /usr/share/icons/hicolor
++	desktop.extra = gtk-update-icon-cache $$PREFIX/share/icons/hicolor
+ }
+ INSTALLS += desktop
+ 
+ # autostart desktop file
+-autostart.path = /usr/share/cmst/autostart
++autostart.path = $$PREFIX/share/cmst/autostart
+ autostart.files = ./misc/desktop/cmst-autostart.desktop
+ INSTALLS += autostart
+-- 
+2.43.4
+
